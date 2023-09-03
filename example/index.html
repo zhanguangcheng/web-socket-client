@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocketClient示例</title>
+</head>
+<body>
+<script src="../src/web-socket-client.min.js"></script>
+<script>
+  var client = new WebSocketClient('ws://127.0.0.1:8282', {
+    path: '/websocket',
+    query: {
+      token: 'xxx',
+    }
+  })
+  var EVENT = WebSocketClient.EVENT;
+
+  console.log('client', client)
+
+  // 连接成功
+  client.on(EVENT.OPEN, function(e) {
+    console.log(EVENT.OPEN, e)
+
+    // 发送消息
+    client.send('login', {
+      user: 'Grass'
+    })
+
+    // 发送原始消息
+    client.sendRaw('hello')
+  })
+
+  // 连接正常关闭
+  client.on(EVENT.CLOSE, function(e) {
+    console.log(EVENT.CLOSE, e)
+  })
+
+  // 发生错误
+  client.on(EVENT.ERROR, function(e) {
+    console.log(EVENT.ERROR, e)
+  })
+
+  // 重连中
+  client.on(EVENT.CONNECTING, function(e) {
+    console.log(EVENT.CONNECTING, e)
+  })
+
+  // 收到消息
+  client.on(EVENT.MESSAGE, function(data) {
+    console.log(EVENT.MESSAGE, data)
+  })
+
+  // 收到自定义消息分类
+  client.on('custom', function(data) {
+    console.log('custom', data)
+  })
+</script>
+</body>
+</html>
