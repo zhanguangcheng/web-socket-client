@@ -139,6 +139,7 @@ export default class WebSocketClient {
   messageQueueTimeout = 300e3;// 错误消息超时时间
   protocol = null;
   readyState = WebSocket.CONNECTING;// 连接状态
+  heartCheckTimer = null;// 心跳定时器
 
   constructor(url, options = {}) {
     for (const key in options) {
@@ -182,6 +183,7 @@ export default class WebSocketClient {
     }, this.openTimeoutInterval)
 
     websocket.onopen = (e) => {
+      clearTimeout(this.heartCheckTimer)
       clearTimeout(openTimeout)
       this.protocol = websocket.protocol;
       this.readyState = WebSocket.OPEN;
@@ -199,6 +201,7 @@ export default class WebSocketClient {
     };
 
     websocket.onclose = (e) => {
+      clearTimeout(this.heartCheckTimer)
       clearTimeout(openTimeout)
       websocket = null;
       this.websocket = null;
@@ -282,7 +285,8 @@ export default class WebSocketClient {
     if (this.pingInterval === false) {
       return;
     }
-    setTimeout(() => {
+    clearTimeout(this.heartCheckTimer);
+    this.heartCheckTimer = setTimeout(() => {
       if (this.readyState === WebSocket.OPEN) {
         this.sendRaw(this.pingData);
         this.heartCheckStart();

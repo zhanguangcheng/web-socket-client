@@ -157,6 +157,7 @@
     this.messageQueueTimeout = 300e3;// 错误消息超时时间
     this.protocol = null;
     this.readyState = null;// 连接状态
+    this.heartCheckTimer = null;// 心跳定时器
 
     if (!options) {
       options = {};
@@ -219,6 +220,7 @@
     }, this.openTimeoutInterval)
 
     websocket.onopen = function (e) {
+      clearTimeout(this.heartCheckTimer)
       clearTimeout(openTimeout)
       _this.protocol = websocket.protocol;
       _this.readyState = WebSocketClass.OPEN;
@@ -236,6 +238,7 @@
     };
 
     websocket.onclose = function (e) {
+      clearTimeout(this.heartCheckTimer)
       clearTimeout(openTimeout)
       websocket = null;
       _this.websocket = null;
@@ -323,7 +326,8 @@
       return;
     }
     var _this = this;
-    setTimeout(function () {
+    clearTimeout(this.heartCheckTimer);
+    this.heartCheckTimer = setTimeout(function () {
       if (_this.readyState === WebSocketClass.OPEN) {
         _this.sendRaw(_this.pingData);
         _this.heartCheckStart();
