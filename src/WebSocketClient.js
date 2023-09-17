@@ -188,7 +188,7 @@ export default class WebSocketClient {
       this.protocol = websocket.protocol;
       this.readyState = WebSocket.OPEN;
       this.reconnectAttempts = 0;
-      this.event.emit(WebSocketClient.EVENT.OPEN, e)
+      this.event.emit(WebSocketClient.EVENT.OPEN, e, {reconnectAttempt: reconnectAttempt})
       this.heartCheckStart()
 
       const currentTime = new Date();

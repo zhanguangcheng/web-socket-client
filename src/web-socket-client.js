@@ -225,7 +225,7 @@
       _this.protocol = websocket.protocol;
       _this.readyState = WebSocketClass.OPEN;
       _this.reconnectAttempts = 0;
-      _this.event.emit(WebSocketClient.EVENT.OPEN, e)
+      _this.event.emit(WebSocketClient.EVENT.OPEN, e, {reconnectAttempt: reconnectAttempt})
       _this.heartCheckStart()
 
       var currentTime = new Date();
